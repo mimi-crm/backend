@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "crm"
+version = "0.1.0"
+description = "고객관리"
+authors = ["mimi"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = "^5.1.3"
+djangorestframework = "^3.15.2"
+drf-spectacular = "^0.27.2"
+python-dotenv = "^1.0.1"
+psycopg2 = "^2.9.10"
+django-cors-headers = "^4.6.0"
+djangorestframework-simplejwt = "^5.3.1"
+faker = "^33.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
