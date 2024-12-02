@@ -15,31 +15,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout 코드
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Python 세팅 (3.13 이상으로 변경)
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'
+        python-version: '3.10'
 
-    # 3. Poetry 설치
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
-    # 4. Poetry 환경 변수 추가
     - name: Add Poetry to PATH
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    # 5. Dependencies 설치
     - name: Install dependencies
-      run: |
-        poetry install
+      run: poetry install
 
-    # 6. 스크립트 실행
     - name: Run tests
+      env:
+        TERM: xterm-256color  # TERM 환경 변수 설정
       run: |
         chmod +x scripts/test.sh
         ./scripts/test.sh
