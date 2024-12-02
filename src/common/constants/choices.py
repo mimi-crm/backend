@@ -6,7 +6,4 @@ STATUS_CHOICES = [
     ("Completed", "완료"),
 ]
 
-GENDER_CHOICES = [
-    ("Male", "남성"),
-    ("Female", "여성")
-]
+GENDER_CHOICES = [("Male", "남성"), ("Female", "여성")]

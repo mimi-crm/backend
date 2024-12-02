@@ -10,8 +10,8 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        phone_number = data.get('phone_number')
-        password = data.get('password')
+        phone_number = data.get("phone_number")
+        password = data.get("password")
 
         try:
             # phone_number로 사용자 검색
@@ -32,11 +32,13 @@ class LoginSerializer(serializers.Serializer):
         refresh_token = str(refresh)
 
         # Refresh Token 캐시에 저장
-        cache.set(f"refresh_token:{user.id}", refresh_token, timeout=7 * 24 * 60 * 60)  # 7일 만료
+        cache.set(
+            f"refresh_token:{user.id}", refresh_token, timeout=7 * 24 * 60 * 60
+        )  # 7일 만료
 
-        data['tokens'] = {
-            'access': access_token,
-            'refresh': refresh_token,
+        data["tokens"] = {
+            "access": access_token,
+            "refresh": refresh_token,
         }
-        data['user'] = user
+        data["user"] = user
         return data

@@ -7,20 +7,37 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Counsel',
+            name="Counsel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('summary', models.TextField()),
-                ('details', models.TextField()),
-                ('emergency', models.BooleanField(default=False)),
-                ('status', models.CharField(choices=[('Pending', '보류중'), ('In Progress', '진행중'), ('Completed', '완료')], default='Pending')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("summary", models.TextField()),
+                ("details", models.TextField()),
+                ("emergency", models.BooleanField(default=False)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "보류중"),
+                            ("In Progress", "진행중"),
+                            ("Completed", "완료"),
+                        ],
+                        default="Pending",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

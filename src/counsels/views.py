@@ -1,11 +1,14 @@
 import logging
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.exceptions import ValidationError
-from drf_spectacular.utils import extend_schema, extend_schema_view
+
+from common.exceptions import (BadRequestException, InternalServerException,
+                               NotFoundException, UnauthorizedException)
 from counsels.models import Counsel
 from counsels.serializers import CounselSerializer
-from common.exceptions import NotFoundException, UnauthorizedException, InternalServerException, BadRequestException
+from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.exceptions import ValidationError
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.permissions import IsAuthenticated
 
 # 공통 로거 가져오기
 logger = logging.getLogger("custom_api_logger")
@@ -21,7 +24,10 @@ logger = logging.getLogger("custom_api_logger")
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "Authentication credentials were not provided."},
+                    "detail": {
+                        "type": "string",
+                        "example": "Authentication credentials were not provided.",
+                    },
                 },
             },
         },
@@ -36,22 +42,29 @@ logger = logging.getLogger("custom_api_logger")
             400: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "입력 데이터가 유효하지 않습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "입력 데이터가 유효하지 않습니다.",
+                    },
                 },
             },
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "이 고객에 대한 권한이 없습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "이 고객에 대한 권한이 없습니다.",
+                    },
                 },
             },
         },
-    )
+    ),
 )
 class CounselListCreateView(ListCreateAPIView):
     """
     상담 기록 조회 및 생성 API
     """
+
     serializer_class = CounselSerializer
     permission_classes = [IsAuthenticated]
 
@@ -65,8 +78,7 @@ class CounselListCreateView(ListCreateAPIView):
         except Exception as e:
             logger.exception("상담 기록 조회 중 오류 발생")
             raise InternalServerException(
-                detail="상담 기록 조회 중 문제가 발생했습니다.",
-                request=self.request
+                detail="상담 기록 조회 중 문제가 발생했습니다.", request=self.request
             )
 
     def perform_create(self, serializer):
@@ -76,18 +88,25 @@ class CounselListCreateView(ListCreateAPIView):
         try:
             customer = serializer.validated_data.get("customer")
             if customer.user != self.request.user:
-                logger.warning(f"권한 없는 고객 상담 기록 생성 시도: 사용자 ID {self.request.user.id}, 고객 ID {customer.id}")
-                raise UnauthorizedException(detail="이 고객에 대한 권한이 없습니다.", request=self.request)
+                logger.warning(
+                    f"권한 없는 고객 상담 기록 생성 시도: 사용자 ID {self.request.user.id}, 고객 ID {customer.id}"
+                )
+                raise UnauthorizedException(
+                    detail="이 고객에 대한 권한이 없습니다.", request=self.request
+                )
             serializer.save()
-            logger.info(f"상담 기록 생성 성공: 사용자 ID {self.request.user.id}, 고객 ID {customer.id}")
+            logger.info(
+                f"상담 기록 생성 성공: 사용자 ID {self.request.user.id}, 고객 ID {customer.id}"
+            )
         except ValidationError as e:
             logger.warning(f"상담 기록 생성 유효성 검사 실패: {e}")
-            raise BadRequestException(detail="입력 데이터가 유효하지 않습니다.", request=self.request)
+            raise BadRequestException(
+                detail="입력 데이터가 유효하지 않습니다.", request=self.request
+            )
         except Exception as e:
             logger.exception("상담 기록 생성 중 오류 발생")
             raise InternalServerException(
-                detail="상담 기록 생성 중 문제가 발생했습니다.",
-                request=self.request
+                detail="상담 기록 생성 중 문제가 발생했습니다.", request=self.request
             )
 
 
@@ -101,13 +120,19 @@ class CounselListCreateView(ListCreateAPIView):
             404: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "요청한 상담 기록을 찾을 수 없습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "요청한 상담 기록을 찾을 수 없습니다.",
+                    },
                 },
             },
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "Authentication credentials were not provided."},
+                    "detail": {
+                        "type": "string",
+                        "example": "Authentication credentials were not provided.",
+                    },
                 },
             },
         },
@@ -122,19 +147,28 @@ class CounselListCreateView(ListCreateAPIView):
             400: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "입력 데이터가 유효하지 않습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "입력 데이터가 유효하지 않습니다.",
+                    },
                 },
             },
             404: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "요청한 상담 기록을 찾을 수 없습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "요청한 상담 기록을 찾을 수 없습니다.",
+                    },
                 },
             },
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "Authentication credentials were not provided."},
+                    "detail": {
+                        "type": "string",
+                        "example": "Authentication credentials were not provided.",
+                    },
                 },
             },
         },
@@ -149,19 +183,28 @@ class CounselListCreateView(ListCreateAPIView):
             400: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "입력 데이터가 유효하지 않습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "입력 데이터가 유효하지 않습니다.",
+                    },
                 },
             },
             404: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "요청한 상담 기록을 찾을 수 없습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "요청한 상담 기록을 찾을 수 없습니다.",
+                    },
                 },
             },
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "Authentication credentials were not provided."},
+                    "detail": {
+                        "type": "string",
+                        "example": "Authentication credentials were not provided.",
+                    },
                 },
             },
         },
@@ -178,22 +221,29 @@ class CounselListCreateView(ListCreateAPIView):
             404: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "요청한 상담 기록을 찾을 수 없습니다."},
+                    "detail": {
+                        "type": "string",
+                        "example": "요청한 상담 기록을 찾을 수 없습니다.",
+                    },
                 },
             },
             401: {
                 "type": "object",
                 "properties": {
-                    "detail": {"type": "string", "example": "Authentication credentials were not provided."},
+                    "detail": {
+                        "type": "string",
+                        "example": "Authentication credentials were not provided.",
+                    },
                 },
             },
         },
-    )
+    ),
 )
 class CounselDetailView(RetrieveUpdateDestroyAPIView):
     """
     상담 기록 조회, 수정, 삭제 API
     """
+
     serializer_class = CounselSerializer
     permission_classes = [IsAuthenticated]
 
@@ -208,7 +258,7 @@ class CounselDetailView(RetrieveUpdateDestroyAPIView):
             logger.exception("상담 기록 조회 중 오류 발생")
             raise InternalServerException(
                 detail="상담 기록을 불러오는 중 문제가 발생했습니다.",
-                request=self.request
+                request=self.request,
             )
 
     def handle_exception(self, exc):
@@ -216,6 +266,10 @@ class CounselDetailView(RetrieveUpdateDestroyAPIView):
         커스텀 예외 처리를 적용
         """
         if isinstance(exc, Counsel.DoesNotExist):
-            logger.warning(f"상담 기록 조회 실패: 상담 기록 ID {self.kwargs.get('pk')}, 사용자 ID {self.request.user.id}")
-            raise NotFoundException(detail="요청한 상담 기록을 찾을 수 없습니다.", request=self.request)
+            logger.warning(
+                f"상담 기록 조회 실패: 상담 기록 ID {self.kwargs.get('pk')}, 사용자 ID {self.request.user.id}"
+            )
+            raise NotFoundException(
+                detail="요청한 상담 기록을 찾을 수 없습니다.", request=self.request
+            )
         return super().handle_exception(exc)

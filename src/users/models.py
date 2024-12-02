@@ -1,8 +1,7 @@
-from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from common.constants.choices import GENDER_CHOICES
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-
-from common.constants.choices import GENDER_CHOICES
 
 
 class UserManager(BaseUserManager):
@@ -58,12 +57,20 @@ class UserManager(BaseUserManager):
         # 슈퍼유저 생성. 기본적으로 이름, 성별, 생년월일, 주소 등의 값을 제공
         user = self.create_user(
             phone_number=phone_number,
-            name=kwargs.get('name', 'Admin'),  # 기본 이름을 'Admin'으로 설정 (제공되지 않은 경우)
-            gender=kwargs.get('gender', 'Other'),  # 기본 성별을 'Other'로 설정 (제공되지 않은 경우)
-            date_of_birth=kwargs.get('date_of_birth', '2000-01-01'),  # 기본 생년월일 설정 (제공되지 않은 경우)
-            address=kwargs.get('address', 'No address'),  # 기본 주소 설정 (제공되지 않은 경우)
+            name=kwargs.get(
+                "name", "Admin"
+            ),  # 기본 이름을 'Admin'으로 설정 (제공되지 않은 경우)
+            gender=kwargs.get(
+                "gender", "Other"
+            ),  # 기본 성별을 'Other'로 설정 (제공되지 않은 경우)
+            date_of_birth=kwargs.get(
+                "date_of_birth", "2000-01-01"
+            ),  # 기본 생년월일 설정 (제공되지 않은 경우)
+            address=kwargs.get(
+                "address", "No address"
+            ),  # 기본 주소 설정 (제공되지 않은 경우)
             password=password,
-            **kwargs
+            **kwargs,
         )
 
         return user
@@ -72,18 +79,21 @@ class UserManager(BaseUserManager):
 # 사용자 모델 정의
 class User(AbstractBaseUser, PermissionsMixin):
     # 사용자 모델 필드 정의
-    phone_number = models.CharField(max_length=13, unique=True)  # 전화번호를 유일하게 사용
-    password = models.CharField(max_length=128,)
+    phone_number = models.CharField(
+        max_length=13, unique=True
+    )  # 전화번호를 유일하게 사용
+    password = models.CharField(
+        max_length=128,
+    )
     key = models.CharField(max_length=128, default="000000")
     name = models.CharField(max_length=25)  # 사용자 이름
-    gender = models.CharField(
-        max_length=10,
-        choices=GENDER_CHOICES  # 성별 선택지 제공
-    )
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)  # 성별 선택지 제공
     date_of_birth = models.DateField()  # 생년월일
     address = models.CharField(max_length=255)  # 사용자 주소
     is_active = models.BooleanField(default=True)  # 계정 활성 상태
-    is_staff = models.BooleanField(default=False)  # 스태프 권한 여부 (관리자 페이지 접근 가능 여부)
+    is_staff = models.BooleanField(
+        default=False
+    )  # 스태프 권한 여부 (관리자 페이지 접근 가능 여부)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -91,8 +101,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 인증에 사용할 필드를 설정. 전화번호로 로그인 가능
     USERNAME_FIELD = "phone_number"
     # 필수 필드 설정 (관리자 생성 시 요구됨)
-    REQUIRED_FIELDS = ['name', 'gender', 'date_of_birth', 'address']
+    REQUIRED_FIELDS = ["name", "gender", "date_of_birth", "address"]
 
     # 사용자 관리자 연결
     objects = UserManager()
-
