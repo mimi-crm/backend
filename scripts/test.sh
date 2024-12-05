@@ -16,3 +16,4 @@ echo "OK"
 echo "Starting test with coverage"
 
 echo "All tests passed successfully!"
+
