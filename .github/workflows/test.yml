@@ -31,10 +31,11 @@ jobs:
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
+      working-directory: crm/backend  # backend 디렉토리에서 설치
       run: poetry install
 
     - name: Run tests
-      working-directory: crm/backend/scripts  # working-directory를 scripts로 변경
+      working-directory: crm/backend/scripts  # scripts 디렉토리에서 실행
       run: |
         chmod +x test.sh
         ./test.sh
