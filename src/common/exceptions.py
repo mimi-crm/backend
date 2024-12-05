@@ -1,5 +1,5 @@
-from rest_framework.exceptions import APIException
 from common.logging_config import logger
+from rest_framework.exceptions import APIException
 
 
 class CustomAPIException(APIException):
@@ -15,7 +15,9 @@ class CustomAPIException(APIException):
             self.status_code = status_code
 
         # 부모 생성자 호출로 detail과 code 설정
-        super().__init__(detail=detail or self.default_detail, code=code or self.default_code)
+        super().__init__(
+            detail=detail or self.default_detail, code=code or self.default_code
+        )
 
         # 로깅 추가
         if request:

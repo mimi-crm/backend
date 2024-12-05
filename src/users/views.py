@@ -1,13 +1,13 @@
 import hashlib
 import logging
 
+from common.exceptions import BadRequestException, InternalServerException
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from common.exceptions import BadRequestException, InternalServerException
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from users.serializers import UserSerializer, UserSignUpSerializer
 
 # 로거 가져오기
@@ -19,6 +19,7 @@ class UserSignUpView(CreateAPIView):
     """
     회원가입을 처리하는 View.
     """
+
     serializer_class = UserSignUpSerializer
     permission_classes = [AllowAny]  # 회원가입은 인증이 필요 없도록 설정
 
@@ -34,16 +35,23 @@ class UserSignUpView(CreateAPIView):
             headers = self.get_success_headers(serializer.data)  # 성공 헤더 추가
             logger.info(f"회원가입 성공: {serializer.data['email']}")
             return Response(
-                {"detail": "회원가입이 성공적으로 완료되었습니다.", "data": serializer.data},
+                {
+                    "detail": "회원가입이 성공적으로 완료되었습니다.",
+                    "data": serializer.data,
+                },
                 status=status.HTTP_201_CREATED,
                 headers=headers,
             )
         except ValidationError as e:
             logger.error(f"회원가입 요청 데이터 유효성 검사 실패: {e}")
-            raise BadRequestException(detail="회원가입 요청 데이터가 유효하지 않습니다.", request=request)
+            raise BadRequestException(
+                detail="회원가입 요청 데이터가 유효하지 않습니다.", request=request
+            )
         except Exception as e:
             logger.exception("회원가입 중 예기치 못한 오류 발생")
-            raise InternalServerException(detail="회원가입 처리 중 문제가 발생했습니다.", request=request)
+            raise InternalServerException(
+                detail="회원가입 처리 중 문제가 발생했습니다.", request=request
+            )
 
     def perform_create(self, serializer):
         """
@@ -57,6 +65,7 @@ class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     """
     로그인된 사용자의 정보를 조회, 수정, 삭제하는 View.
     """
+
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -94,10 +103,14 @@ class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
             return Response(serializer.data)
         except ValidationError as e:
             logger.error(f"사용자 정보 업데이트 실패 - 유효성 오류: {e}")
-            raise BadRequestException(detail="사용자 정보가 유효하지 않습니다.", request=request)
+            raise BadRequestException(
+                detail="사용자 정보가 유효하지 않습니다.", request=request
+            )
         except Exception as e:
             logger.exception("사용자 정보 업데이트 중 예기치 못한 오류 발생")
-            raise InternalServerException(detail="사용자 정보 업데이트 중 문제가 발생했습니다.", request=request)
+            raise InternalServerException(
+                detail="사용자 정보 업데이트 중 문제가 발생했습니다.", request=request
+            )
 
     def delete(self, request, *args, **kwargs):
         """
@@ -111,4 +124,6 @@ class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
             return response
         except Exception as e:
             logger.exception("회원탈퇴 처리 중 예기치 못한 오류 발생")
-            raise InternalServerException(detail="회원탈퇴 처리 중 문제가 발생했습니다.", request=request)
+            raise InternalServerException(
+                detail="회원탈퇴 처리 중 문제가 발생했습니다.", request=request
+            )

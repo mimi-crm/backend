@@ -1,11 +1,13 @@
 import random
-from faker import Faker
-from django.core.management.base import BaseCommand
-from users.models import User
+
 from customers.models import Customer
+from django.core.management.base import BaseCommand
+from faker import Faker
+from users.models import User
 
 # Faker 라이브러리 인스턴스 생성
 faker = Faker("ko_KR")  # 한국어 데이터 생성
+
 
 class Command(BaseCommand):
     help = "유저와 고객 더미 데이터를 생성합니다."
@@ -19,14 +21,16 @@ class Command(BaseCommand):
             # 유저 생성
             users = []
             for i in range(30):
-                phone_number = f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}"
+                phone_number = (
+                    f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}"
+                )
                 user = User.objects.create_user(
                     phone_number=phone_number,
                     name=faker.name(),
-                    gender=random.choice(['Male', 'Female']),
+                    gender=random.choice(["Male", "Female"]),
                     date_of_birth=faker.date_of_birth(),
                     address=faker.address(),
-                    password="password123"
+                    password="password123",
                 )
                 users.append(user)
                 self.stdout.write(f"유저 생성 완료: {user.phone_number}")
@@ -38,10 +42,10 @@ class Command(BaseCommand):
                     customer = Customer(
                         user=user,
                         name=faker.name(),
-                        gender=random.choice(['Male', 'Female']),
+                        gender=random.choice(["Male", "Female"]),
                         phone_number=f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}",
                         address=faker.address(),
-                        key=f"{random.randint(100000, 999999)}"
+                        key=f"{random.randint(100000, 999999)}",
                     )
                     customers.append(customer)
                 Customer.objects.bulk_create(customers)  # 한 번에 고객 데이터 생성
