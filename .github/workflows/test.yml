@@ -37,6 +37,6 @@ jobs:
 
     - name: Run tests
       run: |
-        chmod +x crm/backend/scripts/test.sh
+        chmod +x scripts/test.sh
         ./crm/backend/scripts/test.sh
 
