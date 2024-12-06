@@ -156,10 +156,13 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "crm",
-    "DESCRIPTION": "crm",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
+    "TITLE": "CRM",  # 스웨거 문서의 제목
+    "DESCRIPTION": "crm",  # 스웨거 문서의 설명
+    "VERSION": "1.0.0",  # API 버전
+    "SERVE_INCLUDE_SCHEMA": False,  # 스웨거 UI에 스키마 포함 여부
+    "SERVE_PERMISSIONS": [
+        "rest_framework.permissions.AllowAny"
+    ],  # 인증된 사용자만 접근 가능
 }
 
 

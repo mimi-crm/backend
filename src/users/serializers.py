@@ -5,6 +5,10 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # 비밀번호 필드와 key 필드는 write-only로 설정
+    password = serializers.CharField(write_only=True, min_length=8)
+    key = serializers.CharField(write_only=True, min_length=6)
+
     class Meta:
         model = User
         fields = [
@@ -14,28 +18,11 @@ class UserSerializer(serializers.ModelSerializer):
             "gender",
             "date_of_birth",
             "address",
-        ]
-        read_only_fields = ("id",)
-
-
-class UserSignUpSerializer(serializers.ModelSerializer):
-    # 비밀번호 필드와 key 필드는 write-only로 설정
-    password = serializers.CharField(write_only=True, min_length=8)
-    key = serializers.CharField(write_only=True, min_length=6)
-
-    class Meta:
-        model = User
-        fields = [
-            "phone_number",
-            "name",
-            "gender",
-            "date_of_birth",
-            "address",
             "password",  # 비밀번호 필드
             "key",  # key 필드
         ]
+        read_only_fields = ["id", "password"]
         extra_kwargs = {
-            "password": {"write_only": True},
             "key": {"write_only": True},
         }
 

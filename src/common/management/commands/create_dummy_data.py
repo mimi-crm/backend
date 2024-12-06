@@ -37,19 +37,17 @@ class Command(BaseCommand):
 
             # 고객 생성
             for user in users:
-                customers = []
                 for j in range(30):
-                    customer = Customer(
+                    customer = Customer.objects.create(
                         user=user,
                         name=faker.name(),
                         gender=random.choice(["Male", "Female"]),
                         phone_number=f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}",
                         address=faker.address(),
-                        key=f"{random.randint(100000, 999999)}",
                     )
-                    customers.append(customer)
-                Customer.objects.bulk_create(customers)  # 한 번에 고객 데이터 생성
-                self.stdout.write(f"{user.phone_number}의 고객 30명 생성 완료")
+                    self.stdout.write(
+                        f"고객 생성 완료: {customer.name}, {customer.phone_number}"
+                    )
 
             self.stdout.write("더미 데이터 생성이 완료되었습니다!")
 

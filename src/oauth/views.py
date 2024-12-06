@@ -19,15 +19,18 @@ logger = logging.getLogger("custom_api_logger")
 # 로그인
 class LoginView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = LoginSerializer
 
     @extend_schema(
         tags=["Oauth"],
         summary="로그인 API",
+        description="전화번호와 비밀번호를 사용하여 사용자를 인증하고 액세스 및 리프레시 토큰을 반환합니다.",
         request=LoginSerializer,
         responses={
             200: {
                 "type": "object",
                 "properties": {
+                    "detail": {"type": "string", "example": "로그인에 성공했습니다."},
                     "access_token": {
                         "type": "string",
                         "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -78,16 +81,39 @@ class LoginView(APIView):
 
 # 로그아웃
 class LogoutView(APIView):
-    """
-    로그아웃 API: 액세스 토큰과 리프레시 토큰을 블랙리스트에 추가하고 로그아웃 처리
-    """
-
     permission_classes = [IsAuthenticated]
+    serializer_class = None
 
     @extend_schema(
         tags=["Oauth"],
         summary="로그아웃 API",
-        description="헤더의 액세스 토큰과 쿠키의 리프레시 토큰을 블랙리스트에 추가 후 로그아웃",
+        description="현재 사용자의 Access Token과 Refresh Token을 블랙리스트에 추가하여 로그아웃을 처리합니다.",
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "detail": {"type": "string", "example": "로그아웃에 성공했습니다."},
+                },
+            },
+            400: {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string",
+                        "example": "Refresh Token을 찾을 수 없습니다.",
+                    },
+                },
+            },
+            401: {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string",
+                        "example": "Authorization 헤더에 유효한 Access Token이 없습니다.",
+                    },
+                },
+            },
+        },
     )
     def post(self, request):
         auth_header = request.headers.get("Authorization")
@@ -147,19 +173,42 @@ class LogoutView(APIView):
 
 # 리프레시 토큰 유효성 검사 및 액세스 토큰 재발급
 class TokenRefreshView(APIView):
-    """
-    Access Token 갱신 API
-    """
-
     permission_classes = [AllowAny]
+    serializer_class = None
 
     @extend_schema(
         tags=["Oauth"],
         summary="Access Token 갱신",
-        description=(
-            "만료된 Access Token을 헤더로 보내면, 서버가 쿠키에서 Refresh Token을 가져와 유효성을 검증 후 "
-            "새로운 Access Token을 발급합니다."
-        ),
+        description="만료된 Access Token을 재발급받습니다. Refresh Token은 쿠키에서 자동으로 가져옵니다.",
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    },
+                },
+            },
+            401: {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string",
+                        "example": "Refresh Token이 만료되었습니다.",
+                    },
+                },
+            },
+            400: {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string",
+                        "example": "Access Token이 아직 유효합니다.",
+                    },
+                },
+            },
+        },
     )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
