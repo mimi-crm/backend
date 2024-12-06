@@ -1,4 +1,4 @@
-from counsels.models import Counsel
+from counsels.models import Counsel, CounselDocument
 from rest_framework import serializers
 
 
@@ -12,5 +12,20 @@ class CounselSerializer(serializers.ModelSerializer):
             "details",
             "emergency",
             "status",
+        ]
+        read_only_fields = ("id",)
+
+
+class CounselDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CounselDocument
+        fields = [
+            "id",
+            "counsel",
+            "summary",
+            "document",
+            "path",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = ("id",)
